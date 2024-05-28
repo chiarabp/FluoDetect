@@ -5,10 +5,10 @@ import numpy as np
 from FluoRec import FluoRec
 import sqlite3
 from pathlib import Path
-import bcrypt
 
 
 class DB(object):
+    # id_ is now unsused, it will be later used to make more databases
     def __init__(self, db_name):
         self.con = sqlite3.connect("fluodb.sqlite")
         self.cur = self.con.cursor()
@@ -18,22 +18,10 @@ class DB(object):
         pass
 
     @staticmethod
-    def login(user, passw):
-        salt = bcrypt.gensalt()
-
-        con = sqlite3.connect("fluodb.sqlite")
-        df = pd.read_sql_query(f"SELECT id FROM Profiles WHERE username='{user} AND password='{bcrypt.hashpw(passw.encode('utf-8'), salt)}'", con)
-
-        if df.empty:
-            return 0
-        return df['id']
-
-    @staticmethod
     def get_databases_list():
         con = sqlite3.connect("fluodb.sqlite")
         cur = con.cursor()
         df = pd.read_sql_query("SELECT name from sqlite_master WHERE type='table'", con)
-        df = df[df['name'] != 'Profiles']
 
         # number of records per db
         table_rec_nums = np.zeros(len(df))
